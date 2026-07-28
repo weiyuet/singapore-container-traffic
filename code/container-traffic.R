@@ -42,7 +42,7 @@ container_throughput_clean <- container_throughput_raw %>%
     year_month = as.yearmon(month),
     container_throughput = as.numeric(container_throughput)
   ) %>%
-  drop_na(container_throughput) %>% 
+  drop_na(container_throughput) %>%
   select(year_month, container_throughput)
 
 print(container_throughput_clean)
@@ -52,25 +52,27 @@ container_cargo_clean <- container_cargo_raw %>%
     year_month = as.yearmon(month),
     cargo_throughput = as.numeric(cargo_throughput)
   ) %>%
-  drop_na(cargo_throughput) %>% 
+  drop_na(cargo_throughput) %>%
   select(year_month, cargo_type_secondary, cargo_throughput) %>%
   pivot_wider(
     names_from = cargo_type_secondary,
     values_from = cargo_throughput,
     values_fill = 0
-  ) %>% 
+  ) %>%
   clean_names()
 
 print(container_cargo_clean)
 
 ## 3.2 Join datasets and calculate maritime metrics ----
-container_traffic_metrics <- container_throughput_clean %>% 
-  inner_join(container_cargo_clean, by = "year_month") %>% 
-  mutate(year = as.integer(format(year_month, "%Y")),
-         month_num = as.integer(format(year_month, "%m")),
-         month_label = factor(format(year_month, "%b"), levels = rev(month.abb)),
-         container_ratio = containerised / (containerised + conventional),
-         tonnes_per_teu = containerised / container_throughput)
+container_traffic_metrics <- container_throughput_clean %>%
+  inner_join(container_cargo_clean, by = "year_month") %>%
+  mutate(
+    year = as.integer(format(year_month, "%Y")),
+    month_num = as.integer(format(year_month, "%m")),
+    month_label = factor(format(year_month, "%b"), levels = rev(month.abb)),
+    container_ratio = containerised / (containerised + conventional),
+    tonnes_per_teu = containerised / container_throughput
+  )
 
 print(container_traffic_metrics)
 
@@ -92,15 +94,21 @@ plot_1 <- container_traffic_metrics %>%
   ggplot(aes(x = year_month, y = container_throughput)) +
   geom_line(color = "steelblue") +
   base_theme() +
-  labs(title = "Singapore Port Container Cumulative Throughput",
-       caption = caption,
-       x = NULL,
-       y = "Throughput ('000 TEUs)")
+  labs(
+    title = "Singapore Port Container Cumulative Throughput",
+    caption = caption,
+    x = NULL,
+    y = "Throughput ('000 TEUs)"
+  )
 
 ## 4.2 Seasonal effects ----
-plot_2 <- container_traffic_metrics %>% 
-  ggplot(aes(x = container_throughput, y = month_label, fill = stat(x))) +
-  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01, show.legend = FALSE) +
+plot_2 <- container_traffic_metrics %>%
+  ggplot(aes(x = container_throughput, y = month_label, fill = after_stat(x))) +
+  geom_density_ridges_gradient(
+    scale = 3,
+    rel_min_height = 0.01,
+    show.legend = FALSE
+  ) +
   scale_fill_viridis_c(option = "magma") +
   base_theme() +
   labs(
@@ -112,10 +120,15 @@ plot_2 <- container_traffic_metrics %>%
   )
 
 ## 4.3 Container density trends ----
-plot_3 <- container_traffic_metrics %>% 
+plot_3 <- container_traffic_metrics %>%
   ggplot(aes(x = year_month, y = tonnes_per_teu)) +
   geom_line(color = "steelblue", linewidth = 0.8) +
-  geom_smooth(method = "gam", color = "darkorange", se = FALSE, linetype = "dashed") +
+  geom_smooth(
+    method = "gam",
+    color = "darkorange",
+    se = FALSE,
+    linetype = "dashed"
+  ) +
   base_theme() +
   labs(
     title = "Historical Container Density Trends",
