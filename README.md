@@ -1,8 +1,11 @@
 # Singapore Container Traffic
 
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Data Source](https://img.shields.io/badge/Data-data.gov.sg-red.svg)](https://data.gov.sg)
+
 Created: 2026-07-19
 
-Updated: 2026-07-19
+Updated: 2026-07-28
 
 Data source:
   - [`Open source data from Maritime Port Authority (MPA) data.gov.sg`](https://data.gov.sg/)
