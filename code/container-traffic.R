@@ -86,22 +86,71 @@ base_theme <- function() {
     )
 }
 
-caption <- "Data: Maritime and Port Authority of Singapore (MPA) | Project: https://github.com/weiyuet/singapore-data"
+caption <- "Data: Maritime and Port Authority of Singapore (MPA) | Project: https://github.com/weiyuet/singapore-container-traffic"
 
 # 4.0 Explore Data ----
-## 4.1 Cumulative plot ----
+## 4.1 Segmented Annual CAGR calculation ----
+# Filter complete 12-month calendar years to prevent edge-year distortion
+annual_throughput <- container_traffic_metrics %>%
+  group_by(year) %>%
+  filter(n() == 12) %>%
+  summarise(total_teu = sum(container_throughput), .groups = "drop")
+
+print(annual_throughput)
+
+min_yr <- min(annual_throughput$year)
+max_yr <- max(annual_throughput$year)
+
+# Define macroeconomic periods within dataset limits
+cagr_periods <- tribble(
+  ~period                  , ~start_yr , ~end_yr ,
+  "1995–2007 (Pre-GFC)"    ,      1995 ,    2007 ,
+  "2008–2019 (Post-GFC)"   ,      2008 ,    2019 ,
+  "2020–2025 (Post-COVID)" ,      2020 ,    2025
+) %>%
+  filter(start_yr >= min_yr & end_yr <= max_yr) %>%
+  inner_join(annual_throughput, by = c("start_yr" = "year")) %>%
+  rename(v_start = total_teu) %>%
+  inner_join(annual_throughput, by = c("end_yr" = "year")) %>%
+  rename(v_end = total_teu) %>%
+  mutate(
+    n_years = end_yr - start_yr,
+    cagr = (v_end / v_start)^(1 / n_years) - 1,
+    cagr_str = sprintf("%s: %.2f%%", period, cagr * 100)
+  )
+
+print(cagr_periods)
+
+cagr_annotation <- paste0(
+  "Segmented Annual CAGR:\n",
+  paste(cagr_periods$cagr_str, collapse = "\n")
+)
+
+## 4.2 Monthly throughput & CAGR plot
 plot_1 <- container_traffic_metrics %>%
   ggplot(aes(x = year_month, y = container_throughput)) +
   geom_line(color = "steelblue") +
+  annotate(
+    "label",
+    x = min(container_traffic_metrics$year_month),
+    y = max(container_traffic_metrics$container_throughput),
+    label = cagr_annotation,
+    hjust = 0,
+    vjust = 1,
+    fill = "white",
+    alpha = 0.85,
+    size = 3.5,
+    fontface = "bold"
+  ) +
   base_theme() +
   labs(
-    title = "Singapore Port Container Cumulative Throughput",
+    title = "Singapore Port Monthly Container Throughput",
     caption = caption,
     x = NULL,
     y = "Throughput ('000 TEUs)"
   )
 
-## 4.2 Seasonal effects ----
+## 4.3 Seasonal effects ----
 plot_2 <- container_traffic_metrics %>%
   ggplot(aes(x = container_throughput, y = month_label, fill = after_stat(x))) +
   geom_density_ridges_gradient(
@@ -119,7 +168,7 @@ plot_2 <- container_traffic_metrics %>%
     y = NULL,
   )
 
-## 4.3 Container density trends ----
+## 4.4 Container density trends ----
 plot_3 <- container_traffic_metrics %>%
   ggplot(aes(x = year_month, y = tonnes_per_teu)) +
   geom_line(color = "steelblue", linewidth = 0.8) +
