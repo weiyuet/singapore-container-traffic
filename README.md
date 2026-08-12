@@ -6,24 +6,24 @@
 
 Created: 2026-07-19
 
-Updated: 2026-08-05
+Updated: 2026-08-12
 
 Data source:
   - [`Open source data from Maritime Port Authority (MPA)`](https://data.gov.sg/datasets?query=container&resultId=d_da030f7028200d19ffcbe4a2d71af39c)
   
-An end-to-end data analytics and ETL pipeline evaluating multi-decade monthly container throughput and cargo density metrics for the Port of Singapore.
+A data analytics and ETL pipeline evaluating multi-decade monthly container throughput and cargo density metrics for the Port of Singapore.
 
 ## Background and Insights
 
-As a primary node in global supply chains and one of the world's busiest container transshipment hubs, the port volume through Singapore serves as a barometer for international trade health. This project extracts, normalizes, and analyzes historical maritime dataset series directly from the Maritime and Port Authority of Singapore (MPA) open APIs.
+As a primary node in global supply chains and one of the world's busiest container transshipment hubs, the port volume through Singapore serves as a barometer for international trade health. This project extracts, normalizes, and analyzes historical maritime data directly from the Maritime and Port Authority of Singapore (MPA) open APIs.
 
 ### Key Insights
-* Long-Term Trajectory: Consistent upward volume expansion tracking global containerization, interrupted with acute macroeconomic shocks (2008 Global Financial Crisis, 2020 COVID-19 supply chain disruptions, and recent Red Sea rerouting surges).
+* Long-Term Trajectory: Consistent upward volume expansion tracking global containerization, interrupted with acute macroeconomic shocks (2008 Global Financial Crisis, 2020 COVID-19 supply chain disruptions, and recent Red Sea re-routing surges).
 * Structural Seasonality: Recurrent throughput drop every February, driven by factory shutdowns across East Asia during the Lunar New Year.
 * Freight Density Evolution: Multi-decade decline in average cargo weight per Twenty-Foot Equivalent Unit (TEU), illustrating changes in global shipping stowage factors, types of goods carried, and empty container repositioning cycles.
 
 ### Segmented Compound Annual Growth Rate (CAGR)
-| Macro Era | Horizon | Growth Driver / Context |
+| Macroeconomic Era | Time Horizon | Growth Driver / Context |
 | :--- | :--- | :--- |
 | **Pre-GFC Expansion** | 1995–2007 | Rapid global containerization and Asian manufacturing export volume growth. |
 | **Post-GFC Maturation** | 2008–2019 | Moderate single-digit expansion reflecting trade maturation and fleet consolidation. |
